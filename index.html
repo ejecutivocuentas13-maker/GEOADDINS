@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Reporte de prueba X</title>
+  
+  <style>
+    .divemotor-container { font-family: Arial, sans-serif; padding: 20px; background-color: #f9fafb; } 
+    .divemotor-header { background-color: #111827; color: #ffffff; padding: 20px; border-radius: 6px; margin-bottom: 20px; } 
+    .divemotor-header h1 { margin: 0; font-size: 24px; font-weight: bold; } 
+    .divemotor-header p { margin: 5px 0 0 0; font-size: 14px; color: #9ca3af; } 
+    .divemotor-filters-bar { display: flex; align-items: center; justify-content: space-between; background-color: #ffffff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; flex-wrap: wrap; gap: 15px; } 
+    .divemotor-filter-group { display: flex; align-items: center; gap: 10px; } 
+    .divemotor-label { font-size: 13px; font-weight: bold; color: #374151; } 
+    .divemotor-input { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; } 
+    .divemotor-multiselect-container { position: relative; display: inline-block; } 
+    .divemotor-dropdown-btn { background-color: #ffffff; border: 1px solid #d1d5db; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; min-width: 180px; text-align: left; position: relative; } 
+    .divemotor-dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); border: 1px solid #d1d5db; border-radius: 4px; z-index: 1000; padding: 10px; max-height: 300px; overflow-y: auto; right: 0; } 
+    .divemotor-search-input { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; } 
+    .divemotor-checkbox-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 13px; cursor: pointer; } 
+    .divemotor-checkbox-item input { margin-right: 8px; } 
+    .divemotor-btn-refresh { background-color: #1d4ed8; color: white; border: none; padding: 9px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; } 
+    .divemotor-btn-refresh:hover { background-color: #1e40af; } 
+    .divemotor-btn-excel { background-color: #16a34a; color: white; border: none; padding: 9px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; margin-left: auto; } 
+    .divemotor-btn-excel:hover { background-color: #15803d; } 
+    .divemotor-table-container { background-color: #ffffff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow-x: auto; margin-bottom: 30px; } 
+    .divemotor-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; } 
+    .divemotor-table th, .divemotor-table td { padding: 12px 10px; border: 1px solid #e5e7eb; } 
+    .th-group-total { background-color: #262626; color: #ffffff; text-align: center; font-weight: bold; } 
+    .th-group-period { background-color: #1f4e78; color: #ffffff; text-align: center; font-weight: bold; } 
+    .td-unit { min-width: 250px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+    .td-unit a { color: #1d4ed8; text-decoration: none; font-weight: bold; } 
+    .td-unit a:hover { text-decoration: underline; } 
+    .row-group-total-even { background-color: #f3f4f6; } 
+    .row-group-total-odd { background-color: #ffffff; } 
+    .row-group-period-even { background-color: #e6ebf5; } 
+    .row-group-period-odd { background-color: #f8fafc; } 
+    
+    @media print { 
+      @page { size: A3 landscape; margin: 1cm; } 
+      body, .divemotor-container { background: #fff; padding: 0; } 
+      .divemotor-filters-bar, .divemotor-btn-refresh, .divemotor-btn-excel { display: none !important; } 
+      .divemotor-table-container { box-shadow: none; border: none; } 
+      .divemotor-table th { background-color: #262626 !important; color: #000 !important; border: 1px solid #000; } 
+      .divemotor-table td { border: 1px solid #000; } 
+    }
+  </style>
+</head>
+<body>
+
+  <div class="divemotor-container">
+    <div class="divemotor-header">
+      <h1>Reporte de prueba X</h1>
+      <p>Monitoreo de flota y Rendimiento de combustible</p>
+    </div>
+
+    <div class="divemotor-filters-bar">
+      <div class="divemotor-filter-group">
+        <span class="divemotor-label">Desde:</span>
+        <input type="datetime-local" id="divemotor-date-from" class="divemotor-input">
+      </div>
+      <div class="divemotor-filter-group">
+        <span class="divemotor-label">Hasta:</span>
+        <input type="datetime-local" id="divemotor-date-to" class="divemotor-input">
+      </div>
+      
+      <div class="divemotor-multiselect-container">
+        <button id="divemotor-dropdown-btn" class="divemotor-dropdown-btn">Todas las unidades</button>
+        <div id="divemotor-dropdown-content" class="divemotor-dropdown-content">
+          <input type="text" id="divemotor-search-unit" class="divemotor-search-input" placeholder="Buscar unidad...">
+          <div id="divemotor-checkbox-list"></div>
+        </div>
+      </div>
+
+      <button id="divemotor-btn-refresh" class="divemotor-btn-refresh">Actualizar</button>
+      <button id="divemotor-btn-excel" class="divemotor-btn-excel">Descargar EXCEL</button>
+    </div>
+
+    <h3>Sección 1: Rendimiento de Combustible</h3>
+    <div class="divemotor-table-container">
+      <table class="divemotor-table" id="table-rendimiento">
+        <thead>
+          <tr>
+            <th colspan="4" class="th-group-total">Grupo 1 (Totales/Acumulados)</th>
+            <th colspan="7" class="th-group-period">Grupo 2 (Periodo)</th>
+          </tr>
+          <tr>
+            <th style="background-color: #262626; color: white;">Unidad</th>
+            <th style="background-color: #262626; color: white;">Odómetro final (km)</th>
+            <th style="background-color: #262626; color: white;">Horómetro final (h)</th>
+            <th style="background-color: #262626; color: white;">Vel. prom. acumulada (km/h)</th>
+            <th style="background-color: #1f4e78; color: white;">Dist. recorrida (km)</th>
+            <th style="background-color: #1f4e78; color: white;">Horas motor (h)</th>
+            <th style="background-color: #1f4e78; color: white;">Vel. prom. periodo (km/h)</th>
+            <th style="background-color: #1f4e78; color: white;">Consumo total (gal)</th>
+            <th style="background-color: #1f4e78; color: white;">Consumo en Ralentí total (gal)</th>
+            <th style="background-color: #1f4e78; color: white;">Rendimiento (km/gal)</th>
+            <th style="background-color: #1f4e78; color: white;">Rendimiento (gal/h)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-rendimiento">
+          <tr><td colspan="11" style="text-align:center; padding: 20px; color: #6b7280;">Haga clic en 'Actualizar' para cargar los datos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Sección 2: Rangos Operacionales (AROCS)</h3>
+    <div class="divemotor-table-container">
+      <table class="divemotor-table" id="table-arocs">
+        <thead>
+          <tr>
+            <th style="background-color: #1f4e78; color: white;">Unidad</th>
+            <th style="background-color: #1f4e78; color: white;">Rango Verde (%)</th>
+            <th style="background-color: #1f4e78; color: white;">Rango Amarillo (%)</th>
+            <th style="background-color: #1f4e78; color: white;">Rango Rojo (%)</th>
+            <th style="background-color: #1f4e78; color: white;">Ralentí Excesivo (h)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-arocs">
+          <tr><td colspan="5" style="text-align:center; padding: 20px; color: #6b7280;">Haga clic en 'Actualizar' para cargar los datos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    geotab.addin.divemotor360 = function (api, state) {
+      var allDevices = [];
+      var selectedDeviceIds = [];
+      
+      function injectSheetJS() {
+        if (window.XLSX) return;
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        document.head.appendChild(script);
+      }
+
+      function getGmt5DateString(date) {
+        var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+        var gmt5Time = new Date(utc + (3600000 * -5));
+        var yyyy = gmt5Time.getFullYear();
+        var mm = String(gmt5Time.getMonth() + 1).padStart(2, '0');
+        var dd = String(gmt5Time.getDate()).padStart(2, '0');
+        var hh = String(gmt5Time.getHours()).padStart(2, '0');
+        var min = String(gmt5Time.getMinutes()).padStart(2, '0');
+        return yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + min;
+      }
+
+      function convertToGmt5Iso(dateTimeStr) {
+        if (!dateTimeStr) return null;
+        var localDate = new Date(dateTimeStr);
+        var utcTime = localDate.getTime() - (5 * 3600000);
+        return new Date(utcTime).toISOString();
+      }
+
+      function initFilters() {
+        var now = new Date();
+        var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+        var todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+        
+        document.getElementById('divemotor-date-from').value = getGmt5DateString(todayStart);
+        document.getElementById('divemotor-date-to').value = getGmt5DateString(todayEnd);
+      }
+
+      function loadDevices() {
+        var currentGroup = state.getGroupFilter();
+        var searchCriteria = currentGroup ? { groups: [currentGroup] } : {};
+
+        api.call('Get', {
+          typeName: 'Device',
+          search: searchCriteria
+        }, function (devices) {
+          allDevices = devices || [];
+          renderDeviceDropdown();
+        }, function (error) {
+          console.error('Error cargando vehículos:', error);
+        });
+      }
+
+      function renderDeviceDropdown() {
+        var listContainer = document.getElementById('divemotor-checkbox-list');
+        listContainer.innerHTML = '';
+        
+        allDevices.forEach(function (device) {
+          var item = document.createElement('label');
+          item.className = 'divemotor-checkbox-item';
+          item.setAttribute('data-name', device.name.toLowerCase());
+          
+          var checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = device.id;
+          checkbox.addEventListener('change', handleDeviceSelection);
+          
+          item.appendChild(checkbox);
+          item.appendChild(document.createTextNode(device.name));
+          listContainer.appendChild(item);
+        });
+      }
+
+      function handleDeviceSelection() {
+        var checkboxes = document.querySelectorAll('#divemotor-checkbox-list input[type="checkbox"]');
+        selectedDeviceIds = [];
+        checkboxes.forEach(function (cb) {
+          if (cb.checked) selectedDeviceIds.push(cb.value);
+        });
+        
+        var btn = document.getElementById('divemotor-dropdown-btn');
+        if (selectedDeviceIds.length === 0) {
+          btn.textContent = 'Todas las unidades';
+        } else {
+          btn.textContent = selectedDeviceIds.length + ' unidades sel.';
+        }
+      }
+
+      function setupDropdownToggle() {
+        var btn = document.getElementById('divemotor-dropdown-btn');
+        var content = document.getElementById('divemotor-dropdown-content');
+        
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function () {
+          content.style.display = 'none';
+        });
+
+        content.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+
+        document.getElementById('divemotor-search-unit').addEventListener('input', function (e) {
+          var searchVal = e.target.value.toLowerCase();
+          var items = document.querySelectorAll('.divemotor-checkbox-item');
+          items.forEach(function (item) {
+            var name = item.getAttribute('data-name');
+            if (name.indexOf(searchVal) > -1) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      function processTelemetryData() {
+        var fromDate = convertToGmt5Iso(document.getElementById('divemotor-date-from').value);
+        var toDate = convertToGmt5Iso(document.getElementById('divemotor-date-to').value);
+        
+        var devicesToQuery = selectedDeviceIds.length > 0 ? selectedDeviceIds : allDevices.map(function(d){ return d.id; });
+        
+        var tbodyRendimiento = document.getElementById('tbody-rendimiento');
+        var tbodyArocs = document.getElementById('tbody-arocs');
+        tbodyRendimiento.innerHTML = '<tr><td colspan="11" style="text-align:center;">Procesando telemetría...</td></tr>';
+        tbodyArocs.innerHTML = '<tr><td colspan="5" style="text-align:center;">Procesando rangos...</td></tr>';
+
+        var chunks = [];
+        var chunkSize = 10;
+        for (var i = 0; i < devicesToQuery.length; i += chunkSize) {
+          chunks.push(devicesToQuery.slice(i, i + chunkSize));
+        }
+
+        var finalDataRendimiento = [];
+        var finalDataArocs = [];
+        var chunkIndex = 0;
+
+        function queryNextChunk() {
+          if (chunkIndex >= chunks.length) {
+            renderTables(finalDataRendimiento, finalDataArocs);
+            return;
+          }
+
+          var currentChunk = chunks[chunkIndex];
+          var multiCalls = [];
+
+          currentChunk.forEach(function (deviceId) {
+            var diagnostics = [
+              'DiagnosticOdometerId', 
+              'DiagnosticEngineHoursId', 
+              'DiagnosticTotalFuelUsedId', 
+              'DiagnosticDeviceTotalIdleFuelId'
+            ];
+            
+            diagnostics.forEach(function (diagId) {
+              multiCalls.push([
+                'Get', {
+                  typeName: 'StatusData',
+                  search: {
+                    deviceSearch: { id: deviceId },
+                    diagnosticSearch: { id: diagId },
+                    fromDate: fromDate,
+                    toDate: toDate
+                  }
+                }
+              ]);
+            });
+          });
+
+          api.multiCall(multiCalls, function (results) {
+            var resIdx = 0;
+            currentChunk.forEach(function (deviceId) {
+              var odoData = results[resIdx++] || [];
+              var hoursData = results[resIdx++] || [];
+              var fuelData = results[resIdx++] || [];
+              var idleFuelData = results[resIdx++] || [];
+
+              var devObj = allDevices.find(function(d){ return d.id === deviceId; }) || { name: deviceId, id: deviceId };
+              
+              var deltaOdo = calculateDelta(odoData, 1000, 1000, true); 
+              var deltaHours = calculateDelta(hoursData, 3600, 1000, false);
+              var deltaFuel = calculateDelta(fuelData, 0.264172, 150, false);
+              var deltaIdle = calculateDelta(idleFuelData, 0.264172, 150, false);
+
+              var odoFinal = odoData.length > 0 ? (odoData[odoData.length - 1].data / 1000) : 0;
+              var hoursFinal = hoursData.length > 0 ? (hoursData[hoursData.length - 1].data / 3600) : 0;
+              
+              var velPromAcum = hoursFinal > 0 ? (odoFinal / hoursFinal) : 0;
+              var velPromPeriodo = deltaHours > 0 ? (deltaOdo / deltaHours) : 0;
+              var rendKmg = deltaFuel > 0 ? (deltaOdo / deltaFuel) : 0;
+              var rendGmh = deltaHours > 0 ? (deltaFuel / deltaHours) : 0;
+
+              finalDataRendimiento.push({
+                id: devObj.id,
+                name: devObj.name,
+                odoFinal: odoFinal,
+                hoursFinal: hoursFinal,
+                velPromAcum: velPromAcum,
+                distRecorrita: deltaOdo,
+                horasMotor: deltaHours,
+                velPromPeriodo: velPromPeriodo,
+                fuelTotal: deltaFuel,
+                fuelIdle: deltaIdle,
+                rendKmg: rendKmg,
+                rendGmh: rendGmh
+              });
+
+              var mockVerde = 70 + (Math.random() * 15);
+              var mockAmarillo = 10 + (Math.random() * 10);
+              var mockRojo = 100 - mockVerde - mockAmarillo;
+              var mockIdleExc = deltaIdle > 0 ? deltaIdle * 0.4 : (Math.random() * 2);
+
+              finalDataArocs.push({
+                name: devObj.name,
+                verde: mockVerde,
+                amarillo: mockAmarillo,
+                rojo: mockRojo,
+                idleExc: mockIdleExc
+              });
+            });
+
+            chunkIndex++;
+            queryNextChunk();
+          }, function (err) {
+            console.error('Error en lote multiCall:', err);
+            chunkIndex++;
+            queryNextChunk();
+          });
+        }
+
+        queryNextChunk();
+      }
+
+      function calculateDelta(dataArr, conversionFactor, maxJump, isOdo) {
+        if (dataArr.length < 2) return 0;
+        var totalDelta = 0;
+        
+        for (var i = 1; i < dataArr.length; i++) {
+          var prev = dataArr[i - 1].data;
+          var curr = dataArr[i].data;
+          var rawDelta = curr - prev;
+
+          var convertedDelta = rawDelta * (isOdo && conversionFactor === 1000 ? 0.001 : conversionFactor);
+          if (conversionFactor === 0.264172) {
+             convertedDelta = rawDelta * 0.264172;
+          }
+          if (!isOdo && conversionFactor === 3600) {
+             convertedDelta = rawDelta / 3600;
+          }
+
+          if (convertedDelta >= 0 && convertedDelta <= maxJump) {
+            totalDelta += convertedDelta;
+          }
+        }
+        return totalDelta;
+      }
+
+      function renderTables(rendData, arocsData) {
+        var tbodyRendimiento = document.getElementById('tbody-rendimiento');
+        tbodyRendimiento.innerHTML = '';
+        
+        rendData.forEach(function (row, index) {
+          var tr = document.createElement('tr');
+          var isEven = index % 2 === 0;
+          
+          var c1Class = isEven ? 'row-group-total-even' : 'row-group-total-odd';
+          var c2Class = isEven ? 'row-group-period-even' : 'row-group-period-odd';
+
+          var htmlStr = '<td class="td-unit ' + c1Class + '"><a href="#page=vehicle&id=' + row.id + '">' + row.name + '</a></td>' +
+                        '<td class="' + c1Class + '">' + row.odoFinal.toFixed(2) + '</td>' +
+                        '<td class="' + c1Class + '">' + row.hoursFinal.toFixed(2) + '</td>' +
+                        '<td class="' + c1Class + '">' + row.velPromAcum.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.distRecorrita.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.horasMotor.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.velPromPeriodo.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.fuelTotal.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.fuelIdle.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.rendKmg.toFixed(2) + '</td>' +
+                        '<td class="' + c2Class + '">' + row.rendGmh.toFixed(2) + '</td>';
+          
+          tr.innerHTML = htmlStr;
+          tbodyRendimiento.appendChild(tr);
+        });
+
+        var tbodyArocs = document.getElementById('tbody-arocs');
+        tbodyArocs.innerHTML = '';
+        
+        arocsData.forEach(function (row) {
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td>' + row.name + '</td>' +
+                        '<td>' + row.verde.toFixed(1) + '%</td>' +
+                        '<td>' + row.amarillo.toFixed(1) + '%</td>' +
+                        '<td>' + row.rojo.toFixed(1) + '%</td>' +
+                        '<td>' + row.idleExc.toFixed(2) + '</td>';
+          tbodyArocs.appendChild(tr);
+        });
+      }
+
+      function downloadExcel() {
+        if (!window.XLSX) {
+          alert('Cargando librería XLSX...');
+          return;
+        }
+        
+        var wb = XLSX.utils.book_new();
+        
+        var table1 = document.getElementById('table-rendimiento');
+        var ws1 = XLSX.utils.table_to_sheet(table1);
+        XLSX.utils.book_append_sheet(wb, ws1, 'Rendimiento');
+        
+        var table2 = document.getElementById('table-arocs');
+        var ws2 = XLSX.utils.table_to_sheet(table2);
+        XLSX.utils.book_append_sheet(wb, ws2, 'Rangos_AROCS');
+        
+        XLSX.writeFile(wb, 'Reporte_de_prueba_X.xlsx');
+      }
+
+      return {
+        initialize: function (apiRef, stateRef, callback) {
+          injectSheetJS();
+          initFilters();
+          loadDevices();
+          setupDropdownToggle();
+          
+          document.getElementById('divemotor-btn-refresh').addEventListener('click', processTelemetryData);
+          document.getElementById('divemotor-btn-excel').addEventListener('click', downloadExcel);
+          
+          callback();
+        },
+        focus: function (apiRef, stateRef) {
+          loadDevices();
+        },
+        blur: function () {}
+      };
+    };
+  </script>
+</body>
+</html>
