@@ -1,18 +1,18 @@
 {
-  "name": "reporte pruebaX",
-  "supportEmail": "soporte@tudominio.com",
-  "version": "1.0.0",
-  "items": [
-    {
-      "url": "https://ejecutivocuentas13-maker.github.io/reporte-pruebaX/reporte_divemotor_360.html",
-      "path": "DashboardLink/",
-      "menuName": {
-        "en": "reporte pruebaX",
-        "es": "reporte pruebaX"
-      },
-      "icon": "https://ejecutivocuentas13-maker.github.io/reporte-pruebaX/images/icon.svg"
-    }
-  ],
-  "isSigned": false,
-  "enableViewSecurityId": true
+    "name": "Reporte de prueba X",
+    "supportEmail": "squinones",
+    "version": "1.0.0",
+    "items": [
+        {
+            "url": "https://ejecutivocuentas13-maker.github.io/reporte-pruebaX/index.html",
+            "path": "DashboardLink/",
+            "menuName": {
+                "en": "Reporte de prueba X",
+                "es": "Reporte de prueba X"
+            },
+            "icon": "https://ejecutivocuentas13-maker.github.io/reporte-pruebaX/images/icon.svg"
+        }
+    ],
+    "isSigned": false,
+    "enableViewSecurityId": true
 }
